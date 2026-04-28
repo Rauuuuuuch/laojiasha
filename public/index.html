@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>牢嘉杀</title>
+<style>
+:root {
+  --bg:#0a0a0a;--surface:#141414;--card:#1c1c1c;
+  --primary:#f0a500;--secondary:#ffd060;--accent:#e07800;
+  --text:#f5f5f0;--muted:#888880;--danger:#ff5544;--success:#44cc55;
+  --glow:rgba(240,165,0,.25);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.container{max-width:480px;margin:0 auto;padding:12px;min-height:100vh;display:flex;flex-direction:column}
+h1{text-align:center;font-size:2.2rem;color:var(--primary);margin:16px 0 4px;text-shadow:0 0 24px var(--glow);letter-spacing:2px}
+h1 span{color:#fff}
+.subtitle{text-align:center;color:var(--muted);margin-bottom:20px;font-size:.85rem}
+.screen{display:none;flex:1;flex-direction:column}
+.screen.active{display:flex}
+.card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:12px;border:1px solid rgba(240,165,0,.1)}
+.card h3{color:var(--primary);margin-bottom:10px;font-size:1rem}
+input[type=text]{width:100%;padding:12px;border-radius:8px;border:2px solid rgba(240,165,0,.15);background:var(--surface);color:var(--text);font-size:1rem;outline:none;transition:.2s}
+input:focus{border-color:var(--primary);box-shadow:0 0 12px var(--glow)}
+.btn{display:inline-block;padding:12px 24px;border-radius:8px;border:none;font-size:1rem;font-weight:600;cursor:pointer;transition:.2s;text-align:center;width:100%;margin-top:8px}
+.btn-primary{background:var(--primary);color:#000}
+.btn-primary:hover{background:var(--secondary)}
+.btn-secondary{background:var(--accent);color:#000}
+.btn-secondary:hover{background:var(--primary)}
+.btn-outline{background:transparent;border:2px solid var(--muted);color:var(--muted)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-success{background:var(--success);color:#000}
+.btn-danger{background:var(--danger);color:#000}
+.btn-sm{padding:8px 16px;font-size:.85rem;width:auto;margin:4px}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.btn-row .btn{flex:1;min-width:120px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.role-card{padding:12px;border-radius:8px;border:2px solid rgba(255,255,255,.08);background:var(--surface);cursor:pointer;text-align:center;transition:.2s}
+.role-card:hover{border-color:rgba(240,165,0,.3)}
+.role-card.selected{border-color:var(--primary);background:rgba(240,165,0,.08);box-shadow:0 0 16px var(--glow)}
+.role-card.taken{opacity:.3;cursor:not-allowed}
+.role-card .rname{font-weight:700;font-size:1.1rem}
+.role-card .rdesc{font-size:.65rem;color:var(--muted);margin-top:4px;line-height:1.4}
+.player-list{list-style:none}
+.player-list li{padding:8px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.04)}
+.player-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;background:var(--primary);color:#000;margin-left:6px;font-weight:600}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-win{background:var(--success);color:#000}
+.badge-lose{background:var(--danger);color:#000}
+.game-header{background:var(--surface);border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(240,165,0,.1)}
+.game-header .gh-role{font-weight:700;color:var(--primary)}
+.game-header .gh-phase{color:var(--muted);font-size:.85rem}
+.game-content{flex:1;overflow-y:auto}
+.log-box{background:var(--surface);border-radius:8px;padding:8px 12px;max-height:160px;overflow-y:auto;font-size:.8rem;color:var(--muted);margin-top:8px;border:1px solid rgba(240,165,0,.08)}
+.log-box div{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.log-box div:last-child{border:none}
+.testimony-card{background:var(--surface);border-radius:8px;padding:10px 14px;margin-bottom:6px}
+.testimony-card .trole{font-weight:600;font-size:.9rem}
+.testimony-card .ttext{margin-top:4px}
+.truth-tag{font-size:.7rem;padding:2px 6px;border-radius:3px;margin-left:6px}
+.truth-tag.true{background:var(--success);color:#000}
+.truth-tag.false{background:var(--danger);color:#000}
+.checkbox-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.checkbox-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--primary)}
+.select-group{margin:8px 0}
+.select-group label{display:block;padding:10px 14px;background:var(--surface);border-radius:8px;margin-bottom:6px;cursor:pointer;border:2px solid transparent;transition:.2s;display:flex;align-items:center;gap:10px}
+.select-group label:hover{border-color:rgba(240,165,0,.2)}
+.select-group input[type=radio]:checked+span{color:var(--primary);font-weight:600}
+.select-group input[type=radio]{accent-color:var(--primary);width:16px;height:16px}
+.result-table{width:100%;border-collapse:collapse;margin-top:8px}
+.result-table th,.result-table td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.result-table th{color:var(--muted);font-size:.85rem}
+.secret-info{background:rgba(240,165,0,.06);border:1px solid rgba(240,165,0,.2);border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.9rem}
+.secret-info strong{color:var(--primary)}
+.waiting{text-align:center;padding:32px 0;color:var(--muted)}
+.waiting .dots::after{content:'';animation:dots 1.5s infinite}
+@keyframes dots{0%{content:'.'}33%{content:'..'}66%{content:'...'}}
+textarea{width:100%;padding:10px;border-radius:8px;border:2px solid rgba(240,165,0,.15);background:var(--surface);color:var(--text);font-size:.95rem;resize:vertical;min-height:60px;outline:none;font-family:inherit}
+textarea:focus{border-color:var(--primary);box-shadow:0 0 12px var(--glow)}
+.room-code{font-size:2rem;font-weight:700;letter-spacing:6px;color:var(--primary);text-align:center;padding:12px;background:var(--surface);border-radius:8px;margin:8px 0;user-select:all;text-shadow:0 0 16px var(--glow)}
+.divider{border:none;border-top:1px solid rgba(240,165,0,.1);margin:16px 0}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:100}
+.modal-box{background:var(--card);border-radius:12px;padding:24px;max-width:360px;width:90%;text-align:center;border:1px solid rgba(240,165,0,.2)}
+.modal-box p{margin-bottom:16px}
+.conn-error{background:rgba(255,85,68,.1);border:2px solid var(--danger);border-radius:12px;padding:20px;margin:20px 0;text-align:center;display:none}
+.conn-error h3{color:var(--danger);margin-bottom:8px}
+.conn-error p{color:var(--muted);font-size:.85rem;line-height:1.5}
+.conn-error code{background:var(--surface);padding:2px 8px;border-radius:4px;font-size:.85rem;color:var(--primary)}
+.pready{color:var(--success);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>牢<span>嘉</span>杀</h1>
+  <p class="subtitle">贞操的博弈 · 信任的崩塌</p>
+
+  <!-- 欢迎 -->
+  <div id="s-welcome" class="screen active">
+    <div id="connError" class="conn-error">
+      <h3>⚠ 无法连接服务器</h3>
+      <p>请确保已启动 Node.js 服务端：</p>
+      <p style="margin-top:8px"><code>node server.js</code></p>
+      <p style="margin-top:4px">然后访问 <code>http://localhost:3000</code></p>
+    </div>
+    <div class="card">
+      <h3>创建房间</h3>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:8px">创建后把房间号分享给朋友</p>
+      <button class="btn btn-primary" id="btnCreate">创建新房间</button>
+    </div>
+    <div class="card">
+      <h3>加入房间</h3>
+      <input type="text" id="codeInput" placeholder="输入5位房间号" maxlength="5" style="text-transform:uppercase">
+      <button class="btn btn-secondary" id="btnJoin">加入房间</button>
+    </div>
+    <div id="welcomeErr" style="color:var(--danger);text-align:center;margin-top:8px"></div>
+  </div>
+
+  <!-- 大厅 -->
+  <div id="s-lobby" class="screen">
+    <div class="card">
+      <h3>房间号</h3>
+      <div class="room-code" id="roomCodeDisplay"></div>
+      <p style="text-align:center;color:var(--muted);font-size:.8rem">分享给朋友加入</p>
+    </div>
+    <div class="card">
+      <h3>选择角色 <span style="color:var(--muted);font-size:.8rem;font-weight:400">（点击选择）</span></h3>
+      <div class="role-grid" id="roleGrid"></div>
+      <button class="btn btn-outline btn-sm" id="btnRandom" style="width:100%;margin-top:8px;display:none">🎲 随机分配所有角色</button>
+    </div>
+    <div class="card">
+      <h3>玩家 (<span id="pCount">0</span>/4)</h3>
+      <ul class="player-list" id="playerList"></ul>
+    </div>
+    <button class="btn btn-success" id="btnReady">准备</button>
+    <button class="btn btn-outline" id="btnCancelReady" style="display:none">取消准备</button>
+  </div>
+
+  <!-- 游戏中 -->
+  <div id="s-game" class="screen">
+    <div class="game-header">
+      <div>你是: <span class="gh-role" id="ghRole">-</span></div>
+      <div class="gh-phase" id="ghPhase">-</div>
+    </div>
+    <div class="game-content" id="gameContent"></div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <!-- 结果 -->
+  <div id="s-result" class="screen">
+    <div class="card" id="resultCard"></div>
+    <button class="btn btn-primary" id="btnRestart">再来一局</button>
+  </div>
+</div>
+
+<!-- 确认弹窗 -->
+<div id="confirmModal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <p id="confirmMsg"></p>
+    <div class="btn-row">
+      <button class="btn btn-primary btn-sm" id="confirmYes">确定</button>
+      <button class="btn btn-outline btn-sm" id="confirmNo">取消</button>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+/* ====== 连接检测 ====== */
+let socket, connected = false;
+try {
+  socket = io({ timeout:3000, reconnectionAttempts:3 });
+  socket.on('connect', ()=>{ connected=true; document.getElementById('connError').style.display='none'; });
+  socket.on('connect_error', ()=>{ if(!connected) document.getElementById('connError').style.display='block'; });
+  socket.on('disconnect', ()=>{ connected=false; });
+} catch(e) { document.getElementById('connError').style.display='block'; }
+
+const RN = { jia:'嘉', ray:'Ray', xiaoli:'小笠', caroline:'卡洛琳', virgin:'处男（无关系）' };
+const RDESC = {
+  jia:'【最嘉幻想】【不可信任之人】',
+  ray:'【nerd的质问】【我也要当不能操的爹吗？】',
+  xiaoli:'【翻车鱼的感知】【懵逼的生活】',
+  caroline:'【弃绝的强制爱】【悲剧的女主角】【为什么？】'
+};
+const RCOLOR = { jia:'#f0a500', ray:'#4dabf7', xiaoli:'#69db7c', caroline:'#da77f2' };
+
+let me = { role:null, ready:false };
+let state = { code:'', phase:'LOBBY', players:{} };
+let mySecrets = { perception:null, carolinePrivate:null, rayQResult:null, carolineInvResult:null };
+let jiaMyTruths = {};
+let allTestimony = {};
+
+function $(id){ return document.getElementById(id); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+function customConfirm(msg){
+  return new Promise(resolve=>{
+    $('confirmMsg').textContent=msg;
+    $('confirmModal').style.display='flex';
+    $('confirmYes').onclick=()=>{ $('confirmModal').style.display='none'; resolve(true); };
+    $('confirmNo').onclick=()=>{ $('confirmModal').style.display='none'; resolve(false); };
+  });
+}
+
+/* ====== 欢迎页 ====== */
+$('btnCreate').onclick=()=>{
+  if(!connected) return $('welcomeErr').textContent='未连接到服务器，请先启动 node server.js';
+  socket.emit('create',(r)=>{
+    if(r.ok){ state.code=r.code; show('s-lobby'); }
+    else $('welcomeErr').textContent=r.err||'创建失败';
+  });
+};
+$('btnJoin').onclick=()=>{
+  if(!connected) return $('welcomeErr').textContent='未连接到服务器，请先启动 node server.js';
+  const code=$('codeInput').value.trim();
+  if(!code) return $('welcomeErr').textContent='请输入房间号';
+  socket.emit('join',code,(r)=>{
+    if(r.ok){ state.code=r.code; show('s-lobby'); }
+    else $('welcomeErr').textContent=r.err;
+  });
+};
+$('codeInput').addEventListener('keydown',(e)=>{ if(e.key==='Enter') $('btnJoin').click(); });
+
+/* ====== 大厅 ====== */
+const roles = ['jia','ray','xiaoli','caroline'];
+function renderLobby(){
+  $('roomCodeDisplay').textContent=state.code;
+  const ps=Object.entries(state.players);
+  $('pCount').textContent=ps.length;
+  const taken={};
+  ps.forEach(([sid,p])=>{ if(p.role) taken[p.role]=sid; });
+  const myP=state.players[socket.id];
+  me.role=myP?.role; me.ready=myP?.ready;
+
+  let rg='';
+  roles.forEach(r=>{
+    const sel=me.role===r;
+    const tk=taken[r]&&taken[r]!==socket.id;
+    rg+=`<div class="role-card${sel?' selected':''}${tk?' taken':''}" data-role="${r}">
+      <div class="rname" style="color:${RCOLOR[r]}">${RN[r]}</div>
+      <div class="rdesc">${RDESC[r]}</div>
+      ${tk?'<div style="font-size:.7rem;color:var(--danger);margin-top:2px">已被选择</div>':''}
+    </div>`;
+  });
+  $('roleGrid').innerHTML=rg;
+  $('roleGrid').querySelectorAll('.role-card:not(.taken)').forEach(c=>{
+    c.onclick=()=>{ socket.emit('pickRole',c.dataset.role,r=>{}); };
+  });
+
+  let pl='';
+  ps.forEach(([sid,p])=>{
+    const isMe=sid===socket.id;
+    const roleName=p.role?`<span style="color:${RCOLOR[p.role]||'#fff'};font-weight:600">${RN[p.role]}</span>`:'<span style="color:var(--muted)">未选角色</span>';
+    pl+=`<li><span>${roleName}${isMe?'<span class="player-tag">你</span>':''}</span><span>${p.ready?'<span class="pready">✓ 已准备</span>':''}</span></li>`;
+  });
+  $('playerList').innerHTML=pl;
+  $('btnReady').style.display=me.ready?'none':'block';
+  $('btnCancelReady').style.display=me.ready?'block':'none';
+  $('btnReady').disabled=!me.role;
+  $('btnRandom').style.display=ps.length===4?'block':'none';
+}
+
+$('btnReady').onclick=()=>socket.emit('ready');
+$('btnCancelReady').onclick=()=>socket.emit('cancelReady');
+$('btnRandom').onclick=()=>{ socket.emit('randomRoles',r=>{}); };
+
+/* ====== 房间更新 ====== */
+socket.on('roomUpdate',(d)=>{
+  state=d;
+  const myP=d.players[socket.id];
+  if(myP){ me.role=myP.role; me.ready=myP.ready; }
+  if(d.phase==='LOBBY') renderLobby();
+});
+socket.on('roleAssigned',(role)=>{ me.role=role; });
+
+/* ====== 阶段切换 ====== */
+socket.on('phaseChange',(phase)=>{
+  state.phase=phase;
+  if(phase==='LOBBY'){ show('s-lobby'); renderLobby(); return; }
+  if(phase==='RESULT') return;
+  show('s-game');
+  $('ghRole').textContent=RN[me.role]||'-';
+  $('ghRole').style.color=RCOLOR[me.role]||'#fff';
+  $('ghPhase').textContent=phaseLabel(phase);
+  renderPhase(phase);
+});
+
+function phaseLabel(p){
+  const m={JIA_CHOOSE:'嘉选择关系',CAROLINE_CHOOSE:'卡洛琳选择关系',
+    TESTIMONY_1:'第1轮证言',TESTIMONY_2:'第2轮证言',TESTIMONY_3:'第3轮证言',
+    ABILITY:'技能阶段',ACCUSATION:'指认阶段',RESULT:'结果'};
+  return m[p]||p;
+}
+
+/* ====== 渲染各阶段 ====== */
+function renderPhase(phase){
+  const gc=$('gameContent');
+  if(phase==='JIA_CHOOSE') renderJiaChoose(gc);
+  else if(phase==='CAROLINE_CHOOSE') renderCarolineChoose(gc);
+  else if(phase.startsWith('TESTIMONY_')) renderTestimony(gc,parseInt(phase.split('_')[1]));
+  else if(phase==='ABILITY') renderAbility(gc);
+  else if(phase==='ACCUSATION') renderAccusation(gc);
+}
+
+function renderJiaChoose(gc){
+  if(me.role==='jia'){
+    gc.innerHTML=`<div class="card"><h3>【最嘉幻想】选择发生关系的对象</h3>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:12px">你的选择不会被对方知晓。选择"不发生"则成为【处男】。</p>
+      <div class="select-group">
+        <label><input type="radio" name="jt" value="ray"><span>Ray</span></label>
+        <label><input type="radio" name="jt" value="xiaoli"><span>小笠</span></label>
+        <label><input type="radio" name="jt" value="caroline"><span>卡洛琳</span></label>
+        <label><input type="radio" name="jt" value="" checked><span>不发生关系（【处男】）</span></label>
+      </div>
+      <button class="btn btn-primary" id="jiaConfirm">确认选择</button></div>`;
+    $('jiaConfirm').onclick=()=>{
+      const v=document.querySelector('input[name=jt]:checked')?.value||'';
+      socket.emit('jiaChoose',v||null);
+    };
+  } else {
+    gc.innerHTML=`<div class="waiting"><p>嘉正在做出关键选择<span class="dots"></span></p></div>`;
+  }
+}
+
+function renderCarolineChoose(gc){
+  if(me.role==='caroline'){
+    const others=roles.filter(r=>r!=='caroline');
+    gc.innerHTML=`<div class="card"><h3>【弃绝的强制爱】必须选择一人发生关系</h3>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:8px">你可以选择告知或不告知对象。两种关系可以并存。</p>
+      <div class="select-group">${others.map(r=>`<label><input type="radio" name="ct" value="${r}"><span>${RN[r]}</span></label>`).join('')}</div>
+      <hr class="divider">
+      <h3>是否告知对象？</h3>
+      <div class="select-group">
+        <label><input type="radio" name="ca" value="silent" checked><span>保持沉默（不告知任何人）</span></label>
+        <label><input type="radio" name="ca" value="public"><span>公开宣布（所有人可见）</span></label>
+        <label><input type="radio" name="ca" value="partner"><span>仅私下告知对象</span></label>
+      </div>
+      <button class="btn btn-primary" id="carolineConfirm">确认选择</button></div>`;
+    $('carolineConfirm').onclick=()=>{
+      const target=document.querySelector('input[name=ct]:checked')?.value;
+      const announce=document.querySelector('input[name=ca]:checked')?.value||'silent';
+      if(!target) return;
+      socket.emit('carolineChoose',{target,announce});
+    };
+  } else {
+    gc.innerHTML=`<div class="waiting"><p>卡洛琳正在做出选择<span class="dots"></span></p></div>`;
+  }
+}
+
+function renderTestimony(gc,round){
+  let html='';
+  if(mySecrets.perception!==null && me.role==='xiaoli')
+    html+=`<div class="secret-info"><strong>【翻车鱼的感知】</strong>${mySecrets.perception?'你感知到有人选择了你作为关系对象！但不知道是谁。':'你感知到没有人选择你作为关系对象。'}</div>`;
+  if(mySecrets.carolinePrivate)
+    html+=`<div class="secret-info"><strong>💌 私密消息：</strong>${esc(mySecrets.carolinePrivate)}</div>`;
+
+  for(let r=1;r<=round;r++){
+    html+=`<div class="card"><h3>第 ${r} 轮证言${r===round?' (当前)':''}</h3>`;
+    if(allTestimony[r]){
+      for(const [role,text] of Object.entries(allTestimony[r]))
+        html+=`<div class="testimony-card"><span class="trole" style="color:${RCOLOR[role]||'var(--primary)'}">${RN[role]}</span><div class="ttext">${esc(text)}</div></div>`;
+    }
+    if(r===round) html+=`<p style="color:var(--muted);font-size:.8rem">等待所有人发言…</p>`;
+    html+=`</div>`;
+  }
+
+  html+=`<div class="card" id="testimonyInput">`;
+  if(me.role==='jia'){
+    const truthCount=[1,2,3].filter(r=>jiaMyTruths[r]===true).length;
+    html+=`<h3>【不可信任之人】你的证言（第${round}轮）</h3>
+      <p style="color:var(--muted);font-size:.8rem">必须发言。3轮中至少1轮说真话。已标记真话: ${truthCount} 轮</p>
+      <textarea id="jiaText" placeholder="输入你的证言…"></textarea>
+      <div class="checkbox-row"><input type="checkbox" id="jiaTruth"><label for="jiaTruth" style="color:var(--secondary);cursor:pointer">这轮是真话</label></div>
+      <button class="btn btn-primary" id="jiaSubmit">提交证言</button>`;
+  } else {
+    html+=`<h3>你的发言</h3>
+      <p style="color:var(--muted);font-size:.8rem">可以发言指认、分析、误导，也可以选择沉默。</p>
+      <textarea id="otherText" placeholder="发言内容"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary btn-sm" id="otherSubmit">提交发言</button>
+        <button class="btn btn-outline btn-sm" id="otherSkip">沉默</button>
+      </div>`;
+  }
+  html+=`</div>`;
+  gc.innerHTML=html;
+
+  if(me.role==='jia'){
+    $('jiaSubmit').onclick=async()=>{
+      const text=$('jiaText').value.trim();
+      if(!text) return;
+      const isTrue=$('jiaTruth').checked;
+      jiaMyTruths[round]=isTrue;
+      if(round===3&&!isTrue&&![1,2].some(r=>jiaMyTruths[r]===true)){
+        const ok=await customConfirm('你3轮都没有标记真话！第3轮将被强制设为真话。继续？');
+        if(!ok) return;
+        jiaMyTruths[round]=true;
+      }
+      socket.emit('testimony',{text,isTrue:jiaMyTruths[round]});
+      $('testimonyInput').innerHTML='<p style="color:var(--success);text-align:center;padding:16px">✓ 已提交</p>';
+    };
+  } else {
+    $('otherSubmit')?.addEventListener('click',()=>{
+      const text=$('otherText').value.trim();
+      socket.emit('testimony',{text:text||'（沉默）'});
+      $('testimonyInput').innerHTML='<p style="color:var(--success);text-align:center;padding:16px">✓ 已提交</p>';
+    });
+    $('otherSkip')?.addEventListener('click',()=>{
+      socket.emit('skip');
+      $('testimonyInput').innerHTML='<p style="color:var(--muted);text-align:center;padding:16px">（沉默）</p>';
+    });
+  }
+}
+
+socket.on('testimonyData',({round,data,submitted})=>{
+  allTestimony[round]=data;
+  if(state.phase===`TESTIMONY_${round}`) renderTestimony($('gameContent'),round);
+});
+
+function renderAbility(gc){
+  let html='';
+  html+=`<div class="card"><h3>📜 证言回顾</h3>`;
+  for(let r=1;r<=3;r++){
+    html+=`<div style="margin-bottom:8px"><strong style="color:var(--secondary)">第${r}轮</strong>`;
+    if(allTestimony[r]){
+      for(const [role,text] of Object.entries(allTestimony[r]))
+        html+=`<div class="testimony-card"><span class="trole" style="color:${RCOLOR[role]||'var(--primary)'}">${RN[role]}</span><div class="ttext">${esc(text)}</div></div>`;
+    } else html+=`<p style="color:var(--muted)">无记录</p>`;
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+
+  if(mySecrets.perception!==null && me.role==='xiaoli')
+    html+=`<div class="secret-info"><strong>【翻车鱼的感知】</strong>${mySecrets.perception?'有人选了你作为关系对象！但不知道是谁。':'没有人选你作为关系对象。'}</div>`;
+  if(mySecrets.carolinePrivate)
+    html+=`<div class="secret-info"><strong>💌 </strong>${esc(mySecrets.carolinePrivate)}</div>`;
+
+  if(me.role==='ray'){
+    html+=`<div class="card" id="rayAbility"><h3>【nerd的质问】</h3>
+      <p style="color:var(--muted);font-size:.85rem">任选一轮，让嘉必须诚实回答该轮是否说了真话。</p>
+      <div class="select-group">
+        <label><input type="radio" name="rqr" value="1"><span>第1轮</span></label>
+        <label><input type="radio" name="rqr" value="2"><span>第2轮</span></label>
+        <label><input type="radio" name="rqr" value="3"><span>第3轮</span></label>
+      </div>
+      <div class="select-group">
+        <label><input type="radio" name="rqp" value="public"><span>公开质问（所有人看到结果）</span></label>
+        <label><input type="radio" name="rqp" value="private" checked><span>秘密质问（仅你看到结果）</span></label>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary btn-sm" id="rayQConfirm">使用质问</button>
+        <button class="btn btn-outline btn-sm" id="rayQSkip">放弃</button>
+      </div></div>`;
+  }
+
+  if(me.role==='caroline'){
+    html+=`<div class="card" id="carolineAbility"><h3>【为什么？】秘密调查</h3>
+      <p style="color:var(--muted);font-size:.85rem">调查一个非嘉的角色是否和嘉发生了关系。对方可以说谎，你不知道对方是否说谎。</p>
+      <div class="select-group">
+        <label><input type="radio" name="cit" value="ray"><span>调查 Ray</span></label>
+        <label><input type="radio" name="cit" value="xiaoli"><span>调查 小笠</span></label>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary btn-sm" id="carolineInvConfirm">发起调查</button>
+        <button class="btn btn-outline btn-sm" id="carolineInvSkip">放弃</button>
+      </div></div>`;
+  }
+
+  if(me.role!=='ray' && me.role!=='caroline')
+    html+=`<div class="card"><p style="color:var(--muted);text-align:center">⏳ 等待 Ray 和卡洛琳使用技能…</p></div>`;
+
+  gc.innerHTML=html;
+
+  if(me.role==='ray'){
+    $('rayQConfirm')?.addEventListener('click',()=>{
+      const round=document.querySelector('input[name=rqr]:checked')?.value;
+      const isPublic=document.querySelector('input[name=rqp]:checked')?.value==='public';
+      if(!round) return;
+      socket.emit('rayQuestion',{round:parseInt(round),isPublic});
+      $('rayAbility').innerHTML='<p style="color:var(--success);text-align:center;padding:16px">✓ 已使用质问，等待结果…</p>';
+    });
+    $('rayQSkip')?.addEventListener('click',()=>{
+      socket.emit('raySkip');
+      $('rayAbility').innerHTML='<p style="color:var(--muted);text-align:center;padding:16px">已放弃质问</p>';
+    });
+  }
+  if(me.role==='caroline'){
+    $('carolineInvConfirm')?.addEventListener('click',()=>{
+      const t=document.querySelector('input[name=cit]:checked')?.value;
+      if(!t) return;
+      socket.emit('carolineInvestigate',t);
+      $('carolineAbility').innerHTML='<p style="color:var(--muted);text-align:center;padding:16px">⏳ 等待对方回应…</p>';
+    });
+    $('carolineInvSkip')?.addEventListener('click',()=>{
+      socket.emit('carolineSkipInv');
+      $('carolineAbility').innerHTML='<p style="color:var(--muted);text-align:center;padding:16px">已放弃调查</p>';
+    });
+  }
+}
+
+socket.on('carolineAsk',()=>{
+  const gc=$('gameContent');
+  let div=document.createElement('div');
+  div.className='card'; div.id='carolineAskUI';
+  div.innerHTML=`<h3>💜 卡洛琳的【为什么？】调查</h3>
+    <p>卡洛琳问你：你和嘉发生了关系吗？</p>
+    <p style="color:var(--secondary);font-size:.85rem">你可以说谎！</p>
+    <div class="btn-row">
+      <button class="btn btn-success btn-sm" id="replyYes">回答：是</button>
+      <button class="btn btn-danger btn-sm" id="replyNo">回答：否</button>
+    </div>`;
+  gc.appendChild(div);
+  $('replyYes').onclick=()=>{ socket.emit('carolineReply',true); div.innerHTML='<p style="color:var(--success);text-align:center;padding:12px">✓ 已回应</p>'; };
+  $('replyNo').onclick=()=>{ socket.emit('carolineReply',false); div.innerHTML='<p style="color:var(--success);text-align:center;padding:12px">✓ 已回应</p>'; };
+});
+
+socket.on('carolineInvResult',({target,answer})=>{
+  mySecrets.carolineInvResult={target,answer};
+  const el=$('carolineAbility');
+  if(el) el.innerHTML=`<h3>【为什么？】调查结果</h3><p>${RN[target]} 回答：<strong style="color:var(--secondary)">${answer?'是，和嘉发生了关系':'否，没有和嘉发生关系'}</strong></p><p style="color:var(--muted);font-size:.8rem">⚠️ 对方可能在说谎</p>`;
+});
+
+socket.on('rayQResult',({round,answer,isPublic})=>{
+  mySecrets.rayQResult={round,answer,isPublic};
+  const msg=`嘉第${round}轮证言为 ${answer?'✅ 真话':'❌ 假话'}`;
+  if(me.role==='ray' && $('rayAbility'))
+    $('rayAbility').innerHTML=`<h3>【nerd的质问】结果</h3><p style="color:var(--secondary);font-size:1.1rem">${msg}</p><p style="color:var(--muted);font-size:.8rem">${isPublic?'（已公开给所有人）':'（仅你可见）'}</p>`;
+});
+socket.on('rayQUsed',()=>{});
+
+function renderAccusation(gc){
+  let html='';
+  if(mySecrets.perception!==null && me.role==='xiaoli')
+    html+=`<div class="secret-info"><strong>【翻车鱼的感知】</strong>${mySecrets.perception?'有人选了你':'没人选你'}</div>`;
+  if(mySecrets.rayQResult && (mySecrets.rayQResult.isPublic || me.role==='ray'))
+    html+=`<div class="secret-info"><strong>【nerd的质问】结果：</strong>嘉第${mySecrets.rayQResult.round}轮为${mySecrets.rayQResult.answer?'真话':'假话'}${mySecrets.rayQResult.isPublic?' (公开)':''}</div>`;
+  if(mySecrets.carolineInvResult && me.role==='caroline')
+    html+=`<div class="secret-info"><strong>【为什么？】结果：</strong>${RN[mySecrets.carolineInvResult.target]}回答${mySecrets.carolineInvResult.answer?'是':'否'} (可能说谎)</div>`;
+  if(mySecrets.carolinePrivate)
+    html+=`<div class="secret-info"><strong>💌 </strong>${esc(mySecrets.carolinePrivate)}</div>`;
+
+  html+=`<div class="card"><h3>🎯 指认：嘉和谁发生了关系？</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:8px">两人及以上意见一致且正确 → 嘉失败</p>
+    <div class="select-group">
+      <label><input type="radio" name="aj" value="ray"><span>Ray</span></label>
+      <label><input type="radio" name="aj" value="xiaoli"><span>小笠</span></label>
+      <label><input type="radio" name="aj" value="caroline"><span>卡洛琳</span></label>
+      <label><input type="radio" name="aj" value="virgin"><span>【处男】（没有和任何人发生关系）</span></label>
+    </div></div>`;
+
+  html+=`<div class="card"><h3>（可选）卡洛琳和谁发生了关系？</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:8px">卡洛琳关系被发现 = 除卡洛琳和对象以外1人及以上正确指认</p>
+    <div class="select-group">
+      <label><input type="radio" name="ac" value="jia"><span>嘉</span></label>
+      <label><input type="radio" name="ac" value="ray"><span>Ray</span></label>
+      <label><input type="radio" name="ac" value="xiaoli"><span>小笠</span></label>
+      <label><input type="radio" name="ac" value="" checked><span>不指认 / 不确定</span></label>
+    </div></div>`;
+
+  html+=`<button class="btn btn-danger" id="accuseBtn">提交指认</button>`;
+  html+=`<p id="accuseStatus" style="text-align:center;color:var(--muted);margin-top:8px"></p>`;
+  gc.innerHTML=html;
+
+  $('accuseBtn').onclick=()=>{
+    const jiaP=document.querySelector('input[name=aj]:checked')?.value;
+    if(!jiaP) return;
+    const carolineP=document.querySelector('input[name=ac]:checked')?.value||null;
+    socket.emit('accuse',{jiaPartner:jiaP,carolinePartner:carolineP});
+    $('accuseBtn').disabled=true;
+    $('accuseStatus').textContent='✓ 已提交，等待其他玩家…';
+    $('accuseStatus').style.color='var(--success)';
+  };
+}
+
+socket.on('accuseCount',(n)=>{
+  const el=$('accuseStatus');
+  if(el && !el.textContent.startsWith('✓')) el.textContent=`已提交: ${n}/4`;
+});
+
+/* ====== 结果 ====== */
+socket.on('gameResult',(r)=>{
+  show('s-result');
+  const myResult=r.playerResults[me.role];
+  const jpText=r.jiaPartners.length>0? r.jiaPartners.map(p=>RN[p]).join('、') : '无（【处男】）';
+
+  let html=`<div style="text-align:center;margin-bottom:20px">
+    <div style="font-size:3rem;margin-bottom:8px">${myResult==='win'?'🏆':'💀'}</div>
+    <div style="font-size:1.5rem;font-weight:700;color:${myResult==='win'?'var(--success)':'var(--danger)'}">${myResult==='win'?'你赢了！':'你输了…'}</div>
+    <div style="color:var(--muted);margin-top:4px">你的角色: ${RN[me.role]}</div>
+  </div>`;
+
+  html+=`<hr class="divider">`;
+  html+=`<div style="margin-bottom:16px">
+    <p><strong>嘉的真实关系对象：</strong><span style="color:var(--secondary)">${jpText}</span></p>
+    <p><strong>卡洛琳的关系对象：</strong><span style="color:var(--secondary)">${r.carolineTarget?RN[r.carolineTarget]:'无'}</span></p>
+    <p><strong>嘉的关系是否被发现：</strong>${r.jiaFound?'<span style="color:var(--danger)">✗ 是（2人及以上正确指认）</span>':'<span style="color:var(--success)">✓ 否</span>'}</p>
+    <p><strong>卡洛琳的关系是否被发现：</strong>${r.carolineFound?'<span style="color:var(--danger)">✗ 是</span>':'<span style="color:var(--success)">✓ 否</span>'}</p>
+  </div>`;
+
+  html+=`<hr class="divider"><h3 style="margin-bottom:8px">各角色结果</h3>`;
+  html+=`<table class="result-table"><thead><tr><th>角色</th><th>指认(嘉)</th><th>指认(卡)</th><th>结果</th></tr></thead><tbody>`;
+  for(const role of roles){
+    const acc=r.accusations[role];
+    const res=r.playerResults[role];
+    html+=`<tr>
+      <td style="color:${RCOLOR[role]}">${RN[role]}</td>
+      <td>${acc?RN[acc.jiaPartner]||'-':'-'}</td>
+      <td>${acc?.carolinePartner?RN[acc.carolinePartner]:'-'}</td>
+      <td><span class="badge badge-${res}">${res==='win'?'🏆 胜利':'💀 失败'}</span></td>
+    </tr>`;
+  }
+  html+=`</tbody></table>`;
+
+  html+=`<hr class="divider"><h3 style="margin-bottom:8px">嘉的证言揭秘 【不可信任之人】</h3>`;
+  for(let i=1;i<=3;i++){
+    const s=r.jiaStatementsDetail[i];
+    if(s) html+=`<div class="testimony-card"><span class="trole">第${i}轮</span><span class="truth-tag ${s.isTrue?'true':'false'}">${s.isTrue?'真话':'假话'}</span><div class="ttext">${esc(s.text)}</div></div>`;
+  }
+
+  html+=`<hr class="divider"><h3 style="margin-bottom:8px">胜负规则说明</h3>
+  <div style="font-size:.8rem;color:var(--muted);line-height:1.6">
+    <p><strong style="color:${RCOLOR.jia}">嘉：</strong>不被发现关系（或不被识破【处男】）则胜。</p>
+    <p><strong style="color:${RCOLOR.caroline}">卡洛琳【悲剧的女主角】：</strong>对象为嘉→被发现则卡胜嘉败，隐藏则卡败；对象为小笠→被发现则两败，隐藏则两胜；对象为Ray→被发现则卡胜Ray败，隐藏则卡败Ray胜。</p>
+    <p><strong style="color:${RCOLOR.ray}">Ray【我也要当不能操的爹吗？】：</strong>无关系时指认正确则胜；和嘉有关系，未被发现则胜；和卡洛琳有关系见卡洛琳条件。</p>
+    <p><strong style="color:${RCOLOR.xiaoli}">小笠【懵逼的生活】：</strong>无关系时指认正确则胜；和嘉有关系，未被发现则胜；和卡洛琳有关系见卡洛琳条件。</p>
+  </div>`;
+
+  $('resultCard').innerHTML=html;
+});
+
+$('btnRestart').onclick=()=>{
+  mySecrets={perception:null,carolinePrivate:null,rayQResult:null,carolineInvResult:null};
+  jiaMyTruths={};
+  allTestimony={};
+  socket.emit('restart');
+};
+
+/* ====== 秘密消息 ====== */
+socket.on('perception',(val)=>{ mySecrets.perception=val; });
+socket.on('carolinePrivateMsg',(msg)=>{ mySecrets.carolinePrivate=msg; });
+
+/* ====== 日志 ====== */
+socket.on('log',(msg)=>{
+  const box=$('logBox');
+  if(!box) return;
+  const d=document.createElement('div');
+  d.textContent=msg;
+  box.appendChild(d);
+  box.scrollTop=box.scrollHeight;
+});
+</script>
+</body>
+</html>

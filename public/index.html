@@ -5,90 +5,150 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>牢嘉杀</title>
 <style>
+@font-face {
+  font-family: 'Source Han Sans SC';
+  font-weight: 200;
+  font-style: normal;
+  src: url('./fonts/Source_Han_Sans_SC_ExtraLight_ExtraLight.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Source Han Sans SC';
+  font-weight: 300;
+  font-style: normal;
+  src: url('./fonts/Source_Han_Sans_SC_Light_Light.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Source Han Sans SC';
+  font-weight: 400;
+  font-style: normal;
+  src: url('./fonts/Source_Han_Sans_SC_Regular.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Source Han Sans SC';
+  font-weight: 500;
+  font-style: normal;
+  src: url('./fonts/Source_Han_Sans_SC_Medium_Medium.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Source Han Sans SC';
+  font-weight: 700;
+  font-style: normal;
+  src: url('./fonts/Source_Han_Sans_SC_Bold.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Source Han Sans SC';
+  font-weight: 900;
+  font-style: normal;
+  src: url('./fonts/Source_Han_Sans_SC_Heavy_Heavy.otf') format('opentype');
+}
 :root {
-  --bg:#0a0a0a;--surface:#141414;--card:#1c1c1c;
-  --primary:#f0a500;--secondary:#ffd060;--accent:#e07800;
-  --text:#f5f5f0;--muted:#888880;--danger:#ff5544;--success:#44cc55;
-  --glow:rgba(240,165,0,.25);
+  --bg:#07080a;
+  --surface:#101111;
+  --card:#1b1c1e;
+  --primary:#FF6363;
+  --secondary:#ff8080;
+  --accent:#FF6363;
+  --text:#f9f9f9;
+  --muted:#9c9c9d;
+  --danger:#FF6363;
+  --success:#5fc992;
+  --blue:#55b3ff;
+  --border:rgba(255,255,255,0.06);
+  --border-subtle:rgba(255,255,255,0.1);
+  --glow-blue:hsla(202, 100%, 67%, 0.15);
+  --shadow-ring:rgb(27, 28, 30) 0px 0px 0px 1px, rgb(7, 8, 10) 0px 0px 0px 1px inset;
+  --shadow-btn:rgba(255, 255, 255, 0.05) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.25) 0px 0px 0px 1px, rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:'Source Han Sans SC','Inter Fallback',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;letter-spacing:0.2px;font-weight:500}
 .container{max-width:480px;margin:0 auto;padding:12px;min-height:100vh;display:flex;flex-direction:column}
-h1{text-align:center;font-size:2.2rem;color:var(--primary);margin:16px 0 4px;text-shadow:0 0 24px var(--glow);letter-spacing:2px}
+h1{text-align:center;font-size:2.2rem;color:var(--primary);margin:16px 0 4px;text-shadow:0 0 24px rgba(255,99,99,0.3);letter-spacing:2px}
 h1 span{color:#fff}
-.subtitle{text-align:center;color:var(--muted);margin-bottom:20px;font-size:.85rem}
+.subtitle{text-align:center;color:var(--muted);margin-bottom:20px;font-size:.85rem;letter-spacing:0.2px}
 .screen{display:none;flex:1;flex-direction:column}
 .screen.active{display:flex}
-.card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:12px;border:1px solid rgba(240,165,0,.1)}
-.card h3{color:var(--primary);margin-bottom:10px;font-size:1rem}
-input[type=text]{width:100%;padding:12px;border-radius:8px;border:2px solid rgba(240,165,0,.15);background:var(--surface);color:var(--text);font-size:1rem;outline:none;transition:.2s}
-input:focus{border-color:var(--primary);box-shadow:0 0 12px var(--glow)}
-.btn{display:inline-block;padding:12px 24px;border-radius:8px;border:none;font-size:1rem;font-weight:600;cursor:pointer;transition:.2s;text-align:center;width:100%;margin-top:8px}
-.btn-primary{background:var(--primary);color:#000}
-.btn-primary:hover{background:var(--secondary)}
-.btn-secondary{background:var(--accent);color:#000}
-.btn-secondary:hover{background:var(--primary)}
-.btn-outline{background:transparent;border:2px solid var(--muted);color:var(--muted)}
-.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
-.btn-success{background:var(--success);color:#000}
-.btn-danger{background:var(--danger);color:#000}
-.btn-sm{padding:8px 16px;font-size:.85rem;width:auto;margin:4px}
+.card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid var(--border);box-shadow:var(--shadow-ring)}
+.card h3{color:var(--primary);margin-bottom:10px;font-size:1rem;font-weight:600}
+input[type=text]{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border-subtle);background:var(--bg);color:var(--text);font-size:1rem;outline:none;transition:.2s;font-family:inherit}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--glow-blue)}
+.btn{display:inline-block;padding:12px 24px;border-radius:86px;border:none;font-size:1rem;font-weight:600;cursor:pointer;transition:opacity .2s;text-align:center;width:100%;margin-top:8px}
+.btn-primary{background:hsla(0, 0%, 100%, 0.815);color:#18191a;box-shadow:var(--shadow-btn)}
+.btn-primary:hover{opacity:0.6}
+.btn-secondary{background:var(--primary);color:#18191a;box-shadow:var(--shadow-btn)}
+.btn-secondary:hover{opacity:0.6}
+.btn-outline{background:transparent;border:1px solid var(--border-subtle);color:var(--text)}
+.btn-outline:hover{opacity:0.6}
+.btn-success{background:var(--success);color:#18191a;box-shadow:var(--shadow-btn)}
+.btn-success:hover{opacity:0.6}
+.btn-danger{background:var(--danger);color:#18191a;box-shadow:var(--shadow-btn)}
+.btn-danger:hover{opacity:0.6}
+.btn-sm{padding:8px 16px;font-size:.85rem;width:auto;margin:4px;border-radius:6px}
 .btn:disabled{opacity:.35;cursor:not-allowed}
 .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .btn-row .btn{flex:1;min-width:120px}
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
-.role-card{padding:12px;border-radius:8px;border:2px solid rgba(255,255,255,.08);background:var(--surface);cursor:pointer;text-align:center;transition:.2s}
-.role-card:hover{border-color:rgba(240,165,0,.3)}
-.role-card.selected{border-color:var(--primary);background:rgba(240,165,0,.08);box-shadow:0 0 16px var(--glow)}
+.role-card{padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--surface);cursor:pointer;text-align:center;transition:opacity .2s}
+.role-card:hover{opacity:0.8}
+.role-card.selected{border-color:var(--primary);background:hsla(0, 100%, 69%, 0.08)}
 .role-card.taken{opacity:.3;cursor:not-allowed}
 .role-card .rname{font-weight:700;font-size:1.1rem}
 .role-card .rdesc{font-size:.65rem;color:var(--muted);margin-top:4px;line-height:1.4}
 .player-list{list-style:none}
-.player-list li{padding:8px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.04)}
-.player-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;background:var(--primary);color:#000;margin-left:6px;font-weight:600}
+.player-list li{padding:8px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.player-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;background:var(--primary);color:#18191a;margin-left:6px;font-weight:600}
 .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
-.badge-win{background:var(--success);color:#000}
-.badge-lose{background:var(--danger);color:#000}
-.game-header{background:var(--surface);border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(240,165,0,.1)}
+.badge-win{background:var(--success);color:#18191a}
+.badge-lose{background:var(--danger);color:#18191a}
+.game-header{background:var(--surface);border-radius:16px;padding:12px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border)}
 .game-header .gh-role{font-weight:700;color:var(--primary)}
 .game-header .gh-phase{color:var(--muted);font-size:.85rem}
 .game-content{flex:1;overflow-y:auto}
-.log-box{background:var(--surface);border-radius:8px;padding:8px 12px;max-height:160px;overflow-y:auto;font-size:.8rem;color:var(--muted);margin-top:8px;border:1px solid rgba(240,165,0,.08)}
-.log-box div{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.log-box{background:var(--surface);border-radius:8px;padding:8px 12px;max-height:160px;overflow-y:auto;font-size:.8rem;color:var(--muted);margin-top:8px;border:1px solid var(--border)}
+.log-box div{padding:2px 0;border-bottom:1px solid var(--border)}
 .log-box div:last-child{border:none}
 .testimony-card{background:var(--surface);border-radius:8px;padding:10px 14px;margin-bottom:6px}
 .testimony-card .trole{font-weight:600;font-size:.9rem}
 .testimony-card .ttext{margin-top:4px}
 .truth-tag{font-size:.7rem;padding:2px 6px;border-radius:3px;margin-left:6px}
-.truth-tag.true{background:var(--success);color:#000}
-.truth-tag.false{background:var(--danger);color:#000}
+.truth-tag.true{background:var(--success);color:#18191a}
+.truth-tag.false{background:var(--danger);color:#18191a}
 .checkbox-row{display:flex;align-items:center;gap:8px;margin-top:8px}
 .checkbox-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--primary)}
 .select-group{margin:8px 0}
-.select-group label{display:block;padding:10px 14px;background:var(--surface);border-radius:8px;margin-bottom:6px;cursor:pointer;border:2px solid transparent;transition:.2s;display:flex;align-items:center;gap:10px}
-.select-group label:hover{border-color:rgba(240,165,0,.2)}
+.select-group label{display:block;padding:10px 14px;background:var(--surface);border-radius:8px;margin-bottom:6px;cursor:pointer;border:1px solid transparent;transition:border-color .2s;display:flex;align-items:center;gap:10px}
+.select-group label:hover{border-color:var(--border-subtle)}
 .select-group input[type=radio]:checked+span{color:var(--primary);font-weight:600}
 .select-group input[type=radio]{accent-color:var(--primary);width:16px;height:16px}
 .result-table{width:100%;border-collapse:collapse;margin-top:8px}
-.result-table th,.result-table td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.result-table th,.result-table td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border)}
 .result-table th{color:var(--muted);font-size:.85rem}
-.secret-info{background:rgba(240,165,0,.06);border:1px solid rgba(240,165,0,.2);border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.9rem}
+.secret-info{background:hsla(0, 100%, 69%, 0.08);border:1px solid hsla(0, 100%, 69%, 0.2);border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.9rem}
 .secret-info strong{color:var(--primary)}
 .waiting{text-align:center;padding:32px 0;color:var(--muted)}
 .waiting .dots::after{content:'';animation:dots 1.5s infinite}
 @keyframes dots{0%{content:'.'}33%{content:'..'}66%{content:'...'}}
-textarea{width:100%;padding:10px;border-radius:8px;border:2px solid rgba(240,165,0,.15);background:var(--surface);color:var(--text);font-size:.95rem;resize:vertical;min-height:60px;outline:none;font-family:inherit}
-textarea:focus{border-color:var(--primary);box-shadow:0 0 12px var(--glow)}
-.room-code{font-size:2rem;font-weight:700;letter-spacing:6px;color:var(--primary);text-align:center;padding:12px;background:var(--surface);border-radius:8px;margin:8px 0;user-select:all;text-shadow:0 0 16px var(--glow)}
-.divider{border:none;border-top:1px solid rgba(240,165,0,.1);margin:16px 0}
+textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border-subtle);background:var(--bg);color:var(--text);font-size:.95rem;resize:vertical;min-height:60px;outline:none;font-family:inherit}
+textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--glow-blue)}
+.room-code{font-size:2rem;font-weight:700;letter-spacing:6px;color:var(--primary);text-align:center;padding:12px;background:var(--surface);border-radius:8px;margin:8px 0;user-select:all;text-shadow:0 0 16px rgba(255,99,99,0.3)}
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:100}
-.modal-box{background:var(--card);border-radius:12px;padding:24px;max-width:360px;width:90%;text-align:center;border:1px solid rgba(240,165,0,.2)}
+.modal-box{background:var(--card);border-radius:16px;padding:24px;max-width:360px;width:90%;text-align:center;border:1px solid var(--border);box-shadow:var(--shadow-ring)}
 .modal-box p{margin-bottom:16px}
-.conn-error{background:rgba(255,85,68,.1);border:2px solid var(--danger);border-radius:12px;padding:20px;margin:20px 0;text-align:center;display:none}
+.conn-error{background:hsla(0, 100%, 69%, 0.08);border:1px solid var(--danger);border-radius:12px;padding:20px;margin:20px 0;text-align:center;display:none}
 .conn-error h3{color:var(--danger);margin-bottom:8px}
 .conn-error p{color:var(--muted);font-size:.85rem;line-height:1.5}
 .conn-error code{background:var(--surface);padding:2px 8px;border-radius:4px;font-size:.85rem;color:var(--primary)}
 .pready{color:var(--success);font-size:.8rem}
+.tooltip{position:absolute;z-index:1000;background:var(--card);border:1px solid var(--border-subtle);border-radius:12px;padding:14px 16px;max-width:280px;width:max-content;font-size:.8rem;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .2s,transform .2s}
+.tooltip.visible{opacity:1;transform:translateY(0)}
+.tooltip::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:12px 0 0 12px;background:var(--primary)}
+.tooltip.jia::before{background:var(--primary)}
+.tooltip.ray::before{background:var(--blue)}
+.tooltip.xiaoli::before{background:var(--success)}
+.tooltip.caroline::before{background:#c084fc}
+.tooltip .t-ability{display:block;font-weight:600;margin-bottom:6px;color:var(--primary)}
+.tooltip .t-hint{display:none;margin-top:8px;font-size:.7rem;color:var(--muted);border-top:1px solid var(--border);padding-top:6px}
+@media(hover:none){.tooltip .t-hint{display:block}}
 </style>
 </head>
 <body>
@@ -183,7 +243,13 @@ const RDESC = {
   xiaoli:'【翻车鱼的感知】【懵逼的生活】',
   caroline:'【弃绝的强制爱】【悲剧的女主角】【为什么？】'
 };
-const RCOLOR = { jia:'#f0a500', ray:'#4dabf7', xiaoli:'#69db7c', caroline:'#da77f2' };
+const RCOLOR = { jia:'#FF6363', ray:'#55b3ff', xiaoli:'#5fc992', caroline:'#c084fc' };
+const RFULL = {
+  jia:`<span class="t-ability">【最嘉幻想】</span>在开局可以每天选择发生性关系或者不发生性关系，并且不可以告知与之发生关系的对象。<br><br><span class="t-ability">【处男】</span>选择不发生性关系时，嘉可以骗所有人他跟其中一个人发生了性关系，此时如果其他角色猜出来他是处男的话，则还是嘉失败。<br><br><span class="t-ability">【不可信任之人】</span>嘉需要3轮证言，至少有1轮说真话，非嘉角色（除Ray【nerd的质问】公开情况下）不知道哪一轮是真话。`,
+  ray:`<span class="t-ability">【我也要当不能操的爹吗？】</span>和别人发生关系，只有未被发现的情况下自己才能胜利。（1）和嘉发生关系，如果未被发现则胜利。（2）和卡洛琳发生关系，如果被发现，则卡洛琳胜，Ray败；若未被发现，则卡洛琳败，Ray胜。<br><br><span class="t-ability">【nerd的质问】</span>可以任选一轮，让嘉必须诚实回答有没有说真话，这个指认和回答可以选择公开或不公开。`,
+  xiaoli:`<span class="t-ability">【懵逼的生活】</span>胜利和失败受他人状态影响：（1）如果认为自己和嘉发生关系，需要保持沉默或者引导别人误解，如果未被发现则胜利，被发现则失败。如果自我认知错误，则返回基础条件。（2）若和卡洛琳发生关系且被发现，则两人都失败，若未被发现则两人都胜利（见卡洛琳【悲剧的女主角】）。<br><br><span class="t-ability">【翻车鱼的感知】</span>每轮结束时，小笠可以感知是否有人选择了自己作为关系对象，但不知道那个人是谁。`,
+  caroline:`<span class="t-ability">【弃绝的强制爱】</span>开局必须选择和任意一人发生关系，可以告知或不告知与之发生关系的对象。<br><br><span class="t-ability">【悲剧的女主角】</span>卡洛琳的胜利受性对象的影响：根据对象不同，胜利/失败条件如下：（1）对象为嘉，如果被公开，则嘉败，卡洛琳胜；反之嘉胜，卡洛琳败；（2）对象为小笠，如果被公开，则小笠和卡洛琳都失败；反之小笠和卡洛琳都胜利；（3）对象为Ray，如果被公开，则卡洛琳胜，Ray败；反之卡洛琳败，Ray胜；（4）当性关系为隐藏状态时，卡洛琳所选对象的胜利不受性关系的影响。如果是和嘉发生性关系但被隐藏了，卡洛琳失败；如果是和小笠发生性关系，且未被发现，则卡洛琳胜利，如果是和Ray发生性关系，且未被发现，则卡洛琳失败。<br><br><span class="t-ability">【为什么？】</span>可以拥有一次机会，在证言结束后秘密调查一个非嘉的角色是否和嘉发生了性关系。Ray和小笠可以在这一次调查里面说谎，卡洛琳不知道它们是否说谎。`
+};
 
 let me = { role:null, ready:false };
 let state = { code:'', phase:'LOBBY', players:{} };
@@ -622,7 +688,7 @@ socket.on('gameResult',(r)=>{
   <div style="font-size:.8rem;color:var(--muted);line-height:1.6">
     <p><strong style="color:${RCOLOR.jia}">嘉：</strong>不被发现关系（或不被识破【处男】）则胜。</p>
     <p><strong style="color:${RCOLOR.caroline}">卡洛琳【悲剧的女主角】：</strong>对象为嘉→被发现则卡胜嘉败，隐藏则卡败；对象为小笠→被发现则两败，隐藏则两胜；对象为Ray→被发现则卡胜Ray败，隐藏则卡败Ray胜。</p>
-    <p><strong style="color:${RCOLOR.ray}">Ray【我也要当不能操的爹吗？】：</strong>无关系时指认正确则胜；和嘉有关系，未被发现则胜；和卡洛琳有关系见卡洛琳条件。</p>
+    <p><strong style="color:${RCOLOR.ray}">Ray【我也要当不能操的爹吗？】：</strong>无关系时指认正确则胜；被发生关系，未被发现则胜，被发现则败。</p>
     <p><strong style="color:${RCOLOR.xiaoli}">小笠【懵逼的生活】：</strong>无关系时指认正确则胜；和嘉有关系，未被发现则胜；和卡洛琳有关系见卡洛琳条件。</p>
   </div>`;
 
@@ -649,6 +715,61 @@ socket.on('log',(msg)=>{
   box.appendChild(d);
   box.scrollTop=box.scrollHeight;
 });
+(function(){
+  let tooltip=null;
+  let longPressTimer=null;
+  const LONG_PRESS_MS=500;
+  function createTooltip(){
+    tooltip=document.createElement('div');
+    tooltip.className='tooltip';
+    tooltip.innerHTML='<span class="t-hint">长按查看详情</span>';
+    document.body.appendChild(tooltip);
+  }
+  function showTooltip(el,role){
+    if(!tooltip) createTooltip();
+    tooltip.className='tooltip '+role;
+    tooltip.innerHTML=RFULL[role]+'<span class="t-hint">长按查看详情</span>';
+    const rect=el.getBoundingClientRect();
+    const ttRect=tooltip.getBoundingClientRect();
+    const viewportW=window.innerWidth;
+    const viewportH=window.innerHeight;
+    let top=rect.bottom+8;
+    let left=rect.left;
+    if(left+ttRect.width>viewportW-12) left=viewportW-ttRect.width-12;
+    if(left<12) left=12;
+    if(top+ttRect.height>viewportH-12) top=rect.top-ttRect.height-8;
+    tooltip.style.top=top+'px';
+    tooltip.style.left=left+'px';
+    tooltip.classList.add('visible');
+  }
+  function hideTooltip(){ tooltip&&tooltip.classList.remove('visible'); }
+  function handleMouseEnter(e){
+    const card=e.target.closest('.role-card');
+    if(!card) return;
+    const role=card.dataset.role;
+    if(role) showTooltip(card,role);
+  }
+  function handleMouseLeave(e){
+    const card=e.target.closest('.role-card');
+    if(card) hideTooltip();
+  }
+  function handleTouchStart(e){
+    const card=e.target.closest('.role-card');
+    if(!card) return;
+    const role=card.dataset.role;
+    if(!role) return;
+    longPressTimer=setTimeout(()=>{ showTooltip(card,role); },LONG_PRESS_MS);
+  }
+  function handleTouchEnd(){
+    if(longPressTimer){ clearTimeout(longPressTimer); longPressTimer=null; }
+    setTimeout(hideTooltip,10);
+  }
+  $('roleGrid').addEventListener('mouseenter',handleMouseEnter,true);
+  $('roleGrid').addEventListener('mouseleave',handleMouseLeave,true);
+  $('roleGrid').addEventListener('touchstart',handleTouchStart,{passive:true});
+  $('roleGrid').addEventListener('touchend',handleTouchEnd);
+  $('roleGrid').addEventListener('touchcancel',()=>{ if(longPressTimer){ clearTimeout(longPressTimer); longPressTimer=null; } });
+})();
 </script>
 </body>
 </html>
